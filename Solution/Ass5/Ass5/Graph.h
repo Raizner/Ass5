@@ -25,7 +25,7 @@ class Graph
 private:
 	array<array<bool, N>, N> &p_matrix;
 	array<size_t, N> p_colors;
-
+	int kColor;
 	void hillClimbing();
 	void tabuSearch();
 	void simulatedAnneling();
@@ -34,7 +34,7 @@ private:
 	array<size_t, N> findAllConflictVertecies();
 
 public:
-	Graph(array<array<bool, N>, N> &, array<size_t, N>);
+	Graph(array<array<bool, N>, N> &matrix, array<size_t, N> colors,int numberOfColors);
 	~Graph(void);
 	void RunLocalSearch();
 	int CalcFitness();
