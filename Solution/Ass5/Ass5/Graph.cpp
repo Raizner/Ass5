@@ -2,8 +2,8 @@
 #include "Graph.h"
 
 
-Graph::Graph(array<array<bool, N>, N> &matrix, array<size_t, N> colors,int numberOfColors) :
-	p_matrix(matrix), p_colors(colors), kColor(numberOfColors)
+Graph::Graph(array<array<bool, N>, N> &matrix, array<size_t, N> colors,int numberOfColors, list<pair<int, int>> &edges) :
+	p_matrix(matrix), p_colors(colors), kColor(numberOfColors), p_edges(edges)
 {
 }
 
@@ -54,4 +54,31 @@ void Graph::changeAllVerteciesWithGivenColor(int colorToChange,int newColor){
 			p_colors.at(i)=newColor;
 		}
 	}
+}
+
+int Graph::calcFitness(array<size_t, N> *input){
+
+	int fitness = 0;
+	array<size_t, N> temp_color;
+	if (input == nullptr)
+	{
+		temp_color = p_colors;
+	} else
+	{
+		temp_color = * input;
+	}
+	list<pair<int, int>>::iterator it = p_edges.begin();
+	for (; it != p_edges.end(); ++it)
+	{
+		if (temp_color[it->first] == temp_color[it->second])
+		{
+			fitness += 7;
+		}
+	}
+	return fitness;
+}
+
+int Graph::CalcFitness(){
+
+	return calcFitness(nullptr);
 }

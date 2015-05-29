@@ -130,7 +130,7 @@ inline void swap(ga_vector *&population,
 
 int main()
 {
-
+	edgeslist = *Graph::createEdgesList();
 
 	srand(unsigned(time(NULL)));
 
