@@ -40,7 +40,9 @@ public:
 	void RunLocalSearch();
 	int CalcFitness();
 	int getColorNumberOfMinumumApperancesOfColorInVertices();
-
+	int getNumberOfVertices();
+	int getVertexColorAtIndex(int index);
+	void changeAllVerteciesWithGivenColor(int colorToChange,int newColor);
 	static shared_ptr<array<size_t, N>> createRandomColors(int maxColors){
 
 		shared_ptr<array<size_t, N>> temp(new array<size_t, N>());

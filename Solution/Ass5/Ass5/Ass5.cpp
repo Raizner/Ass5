@@ -90,7 +90,15 @@ void mutate(ga_struct &member)
 
 	member.str[ipos] = ((member.str[ipos] + delta) % 122);*/
 	/*CSM mutation */
-	
+	int minimumColor = member.graph->getColorNumberOfMinumumApperancesOfColorInVertices();
+	int colorPlace = rand()%member.graph->getNumberOfVertices();
+	int color = member.graph->getVertexColorAtIndex(colorPlace);
+	while(color==minimumColor){//We found vertex with same color , as minimum ,must be changed.
+		colorPlace = rand()%member.graph->getNumberOfVertices();
+		color = member.graph->getVertexColorAtIndex(colorPlace);
+	}
+	member.graph->changeAllVerteciesWithGivenColor(minimumColor,color);
+	return;
 }
 
 void mate(ga_vector &population, ga_vector &buffer)

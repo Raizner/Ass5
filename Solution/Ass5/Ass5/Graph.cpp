@@ -36,3 +36,22 @@ int Graph::getColorNumberOfMinumumApperancesOfColorInVertices(){
 	delete colorArray;
 	return minumumColorNumber;
 }
+
+
+int Graph::getNumberOfVertices(){
+	return p_colors.size();
+}
+
+int Graph::getVertexColorAtIndex(int index){
+	return p_colors.at(index);
+}
+
+
+void Graph::changeAllVerteciesWithGivenColor(int colorToChange,int newColor){
+	for (int i = 0; i < p_colors.size(); i++)
+	{
+		if(p_colors.at(i)==colorToChange){
+			p_colors.at(i)=newColor;
+		}
+	}
+}
