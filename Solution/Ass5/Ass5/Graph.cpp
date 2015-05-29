@@ -15,7 +15,24 @@ Graph::~Graph(void)
 
 int Graph::getColorNumberOfMinumumApperancesOfColorInVertices(){
 
-	int minumimNumber = -1;
+	int tempMimimum = -1;
+	int minumumColorNumber = -1;
+	int *colorArray = new int[kColor];
 
 
+	for (int i = 0; i < N; ++i)
+	{
+		++(colorArray[p_colors[i]]);
+	}
+
+	for (int i = 0; i < N; i++)
+	{
+		if (tempMimimum < colorArray[i])
+		{
+			tempMimimum = colorArray[i];
+			minumumColorNumber = i;
+		}
+	}
+	delete colorArray;
+	return minumumColorNumber;
 }
