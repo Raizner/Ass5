@@ -8,13 +8,15 @@ using namespace std;
 namespace {
 
 	const int N = 3;
-}
 
-array<array<bool, N>, N> givenGraph = {{
+	array<array<bool, 5>, 5> givenGraph = {{
 	{0,1,1},
 	{1,0,0},
 	{1,0,0}
 }};
+}
+
+
 
 
 

@@ -120,13 +120,6 @@ inline void swap(ga_vector *&population,
 int main()
 {
 
-	array<array<bool, N>, N> givenGraph = {{
-    {0,1,1},
-    {1,0,0},
-	{1,0,0}
-	}};
-	
-
 
 	srand(unsigned(time(NULL)));
 
