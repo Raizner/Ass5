@@ -2,15 +2,6 @@
 //
 
 #include "stdafx.h"
-#ifdef CHECK
-
-int main(int argc, char* argv[])
-{
-	printf("Hello World!\n");
-	return 0;
-}
-
-#endif
 
 #pragma warning(disable:4786)		// disable debug warning
 
@@ -20,6 +11,7 @@ int main(int argc, char* argv[])
 #include <algorithm>				// for sort algorithm
 #include <time.h>					// for random seed
 #include <math.h>					// for abs()
+#include "Graph.h"
 
 #define GA_POPSIZE		2048		// ga population size
 #define GA_MAXITER		16384		// maximum iterations
@@ -127,6 +119,15 @@ inline void swap(ga_vector *&population,
 
 int main()
 {
+
+	array<array<bool, N>, N> givenGraph = {{
+    {0,1,1},
+    {1,0,0},
+	{1,0,0}
+	}};
+	
+
+
 	srand(unsigned(time(NULL)));
 
 	ga_vector pop_alpha, pop_beta;
