@@ -113,13 +113,27 @@ void mate(ga_vector &population, ga_vector &buffer)
 		i1 = rand() % (GA_POPSIZE / 2);
 		i2 = rand() % (GA_POPSIZE / 2);
 		spos = rand() % tsize;
-
+		/* Uniform Mating :
 		buffer[i].str = population[i1].str.substr(0, spos) + 
 			            population[i2].str.substr(spos, tsize - spos);
-
+*/
+		UniformMating(population[i1],population[i2],buffer[i]);
 		if (rand() < GA_MUTATION) mutate(buffer[i]);
 	}
 }
+
+void UniformMating(ga_struct parent1,ga_struct parent2 , ga_struct offspring){
+	for(int i=0;i<parent1.graph->getNumberOfVertices();i++){
+		int coin = rand()%2;
+		if(coin==1){
+			offspring.graph->setVertexColorAtIndex(i,parent1.graph->getVertexColorAtIndex(i));
+		}else{
+			offspring.graph->setVertexColorAtIndex(i,parent2.graph->getVertexColorAtIndex(i));
+		}
+	}
+	return;
+}
+
 
 inline void print_best(ga_vector &gav)
 { cout << "Best: " << gav[0].str << " (" << gav[0].fitness << ")" << endl; }
