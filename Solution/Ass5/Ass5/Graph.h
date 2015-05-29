@@ -38,6 +38,7 @@ public:
 	~Graph(void);
 	void RunLocalSearch();
 	int CalcFitness();
+	int getColorNumberOfMinumumApperancesOfColorInVertices();
 
 	static shared_ptr<array<size_t, N>> createRandomColors(int maxColors){
 
