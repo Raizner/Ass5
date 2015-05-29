@@ -24,6 +24,7 @@ using namespace std;				// polluting global namespace, but hey...
 
 struct ga_struct 
 {
+	Graph* graph; 
 	string str;						// the string
 	unsigned int fitness;			// its fitness
 };
@@ -83,11 +84,13 @@ void elitism(ga_vector &population,
 
 void mutate(ga_struct &member)
 {
-	int tsize = GA_TARGET.size();
+	/*int tsize = GA_TARGET.size();
 	int ipos = rand() % tsize;
 	int delta = (rand() % 90) + 32; 
 
-	member.str[ipos] = ((member.str[ipos] + delta) % 122);
+	member.str[ipos] = ((member.str[ipos] + delta) % 122);*/
+	/*CSM mutation */
+	
 }
 
 void mate(ga_vector &population, ga_vector &buffer)

@@ -9,7 +9,7 @@ namespace {
 
 	const int N = 3;
 
-	array<array<bool, 5>, 5> givenGraph = {{
+	array<array<bool, N>, N> givenGraph = {{
 	{0,1,1},
 	{1,0,0},
 	{1,0,0}
