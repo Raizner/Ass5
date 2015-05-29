@@ -101,27 +101,6 @@ void mutate(ga_struct &member)
 	return;
 }
 
-void mate(ga_vector &population, ga_vector &buffer)
-{
-	int esize = GA_POPSIZE * GA_ELITRATE;
-	int tsize = GA_TARGET.size(), spos, i1, i2;
-
-	elitism(population, buffer, esize);
-
-	// Mate the rest
-	for (int i=esize; i<GA_POPSIZE; i++) {
-		i1 = rand() % (GA_POPSIZE / 2);
-		i2 = rand() % (GA_POPSIZE / 2);
-		spos = rand() % tsize;
-		/* Uniform Mating :
-		buffer[i].str = population[i1].str.substr(0, spos) + 
-			            population[i2].str.substr(spos, tsize - spos);
-*/
-		UniformMating(population[i1],population[i2],buffer[i]);
-		if (rand() < GA_MUTATION) mutate(buffer[i]);
-	}
-}
-
 void UniformMating(ga_struct parent1,ga_struct parent2 , ga_struct offspring){
 	for(int i=0;i<parent1.graph->getNumberOfVertices();i++){
 		int coin = rand()%2;
@@ -133,6 +112,45 @@ void UniformMating(ga_struct parent1,ga_struct parent2 , ga_struct offspring){
 	}
 	return;
 }
+
+
+int getBestCitizenIndexTournamentOfFour(ga_struct citizen1,ga_struct citizen2,ga_struct citizen3 , ga_struct  citizen4,int i1,int i2,int i3,int i4){
+	int max = 0,best1=0,best2=0;
+	best1=citizen1.fitness>=citizen2.fitness?i1:i2;
+	best2=citizen3.fitness>=citizen4.fitness?i3:i4;
+	return best1>=best2?best1:best2;
+}
+
+void mate(ga_vector &population, ga_vector &buffer)
+{
+	int esize = GA_POPSIZE * GA_ELITRATE;
+	int tsize = GA_TARGET.size(), spos, i1, i2,i3,i4,parent1Index,parent2Index;
+
+	elitism(population, buffer, esize);
+
+	// Mate the rest
+	for (int i=esize; i<GA_POPSIZE; i++) {
+
+		i1 = rand() % (GA_POPSIZE / 2);
+		i2 = rand() % (GA_POPSIZE / 2);
+		i3 = rand() % (GA_POPSIZE / 2);
+		i4 = rand() % (GA_POPSIZE / 2);
+		parent1Index = getBestCitizenIndexTournamentOfFour(population[i1],population[i2],population[i3],population[i4],i1,i2,i3,i4);
+		i1 = rand() % (GA_POPSIZE / 2);
+		i2 = rand() % (GA_POPSIZE / 2);
+		i3 = rand() % (GA_POPSIZE / 2);
+		i4 = rand() % (GA_POPSIZE / 2);
+		parent2Index = getBestCitizenIndexTournamentOfFour(population[i1],population[i2],population[i3],population[i4],i1,i2,i3,i4);
+		/* Uniform Mating :
+		buffer[i].str = population[i1].str.substr(0, spos) + 
+			            population[i2].str.substr(spos, tsize - spos);
+*/
+		UniformMating(population[parent1Index],population[parent2Index],buffer[i]);
+		if (rand() < GA_MUTATION) mutate(buffer[i]);
+	}
+}
+
+
 
 
 inline void print_best(ga_vector &gav)
