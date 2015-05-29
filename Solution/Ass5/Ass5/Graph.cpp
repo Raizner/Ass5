@@ -46,6 +46,10 @@ int Graph::getVertexColorAtIndex(int index){
 	return p_colors.at(index);
 }
 
+void Graph::setVertexColorAtIndex(int index,int color){
+	p_colors[index]=color;
+
+}
 
 void Graph::changeAllVerteciesWithGivenColor(int colorToChange,int newColor){
 	for (int i = 0; i < p_colors.size(); i++)

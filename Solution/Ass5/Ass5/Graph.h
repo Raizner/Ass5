@@ -47,6 +47,7 @@ public:
 	int getColorNumberOfMinumumApperancesOfColorInVertices();
 	int getNumberOfVertices();
 	int getVertexColorAtIndex(int index);
+	void setVertexColorAtIndex(int index,int color);
 	void changeAllVerteciesWithGivenColor(int colorToChange,int newColor);
 	static shared_ptr<array<size_t, N>> createRandomColors(int maxColors){
 
