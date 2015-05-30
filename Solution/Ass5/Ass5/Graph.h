@@ -9,7 +9,7 @@ using namespace std;
 namespace {
 
 	const int N = 3;
-
+	int maxDensityEdge;
 	array<array<bool, N>, N> givenGraph = {{
 	{0,1,1},
 	{1,0,0},
@@ -37,7 +37,8 @@ private:
 	int calcFitness(array<size_t, N> *input = nullptr);
 	int findConflictVertex();
 	array<size_t, N> findAllConflictVertecies();
-	
+	const int maxDensity;
+
 
 public:
 	Graph(array<array<bool, N>, N> &matrix, array<size_t, N> colors,int numberOfColors, list<pair<int, int>> &edges);
@@ -60,6 +61,23 @@ public:
 		return temp;
 	}
 	
+	static int FindMaxDensityEdge(){
+		int max = 0;
+		for (int i = 0; i < N; i++)
+		{
+			int counterOfEdges=0;
+			for (int j = 0; j < N && j < i; j++)
+			{
+				if(givenGraph[i][j]==1){
+					counterOfEdges++;
+				}
+			}
+			max = (max <= counterOfEdges) ? counterOfEdges : max;
+		}
+		return max;
+	}
+
+
 	static shared_ptr<list<pair<int, int>>> createEdgesList(){
 	
 		shared_ptr<list<pair<int, int>>> temp(new list<pair<int, int>>());

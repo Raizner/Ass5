@@ -164,7 +164,7 @@ inline void swap(ga_vector *&population,
 int main()
 {
 	edgeslist = *Graph::createEdgesList();
-
+	maxDensityEdge = Graph::FindMaxDensityEdge();
 	srand(unsigned(time(NULL)));
 
 	ga_vector pop_alpha, pop_beta;

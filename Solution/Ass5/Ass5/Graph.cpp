@@ -3,9 +3,11 @@
 
 
 Graph::Graph(array<array<bool, N>, N> &matrix, array<size_t, N> colors,int numberOfColors, list<pair<int, int>> &edges) :
-	p_matrix(matrix), p_colors(colors), kColor(numberOfColors), p_edges(edges)
+	p_matrix(matrix), p_colors(colors), kColor(numberOfColors), p_edges(edges),maxDensity(maxDensityEdge)
 {
+
 }
+
 
 
 Graph::~Graph(void)
