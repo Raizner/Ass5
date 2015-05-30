@@ -54,7 +54,7 @@ void Graph::setVertexColorAtIndex(int index,int color){
 }
 
 void Graph::changeAllVerteciesWithGivenColor(int colorToChange,int newColor){
-	for (int i = 0; i < p_colors.size(); i++)
+	for (size_t i = 0; i < p_colors.size(); i++)
 	{
 		if(p_colors.at(i)==colorToChange){
 			p_colors.at(i)=newColor;
@@ -93,7 +93,7 @@ int Graph::CalcFitness(){
 void Graph::printColoringVertices(ostream &out) const{
 
 	cout << "Graph Colors: " ;
-	for (int i = 0; i < p_colors.size(); i++)
+	for (size_t i = 0; i < p_colors.size(); i++)
 	{
 		cout << i << ": " << p_colors[i] << ", ";
 	}
@@ -103,7 +103,7 @@ void Graph::printColoringVertices(ostream &out) const{
 
 
 ostream &operator<<(ostream &out, const Graph &obj) {
-    obj.printColoringVertices(out);
+	obj.printColoringVertices(out);
 	return out;	
 }
 
@@ -114,4 +114,65 @@ bool Graph::doWeWantToStop(){
 		return true;
 	}
 	return false;
+}
+
+
+void Graph::RunLocalSearch(bool toShuffle, searchType type){
+	int numberOfConflicts = 0;
+	numberOfConflicts=this->findNumberConflictVertecies();
+	if (toShuffle)
+	{
+		type = static_cast<searchType>(rand() % 3);
+	}
+	switch (type)
+	{
+
+	case HillClimbing:
+		hillClimbing();
+		break;
+	case TabuSearch:
+		tabuSearch();
+		break;
+	case SimulatedAnnealing:
+		simulatedAnneling();
+		break;
+	default:
+		break;
+	}
+}
+
+
+void Graph::hillClimbing(){
+
+
+
+}
+
+void Graph::tabuSearch(){
+
+
+
+
+}
+
+void Graph::simulatedAnneling(){
+
+
+
+}
+
+
+shared_ptr<array<size_t, N>> Graph::findAllConflictVertecies(){
+	shared_ptr<array<size_t, N>> a(new array<size_t, N>());
+
+	return a;
+
+}
+
+
+int Graph::findNumberConflictVertecies(){
+
+	array<size_t, N> temp = * findAllConflictVertecies();
+
+	return temp.size();
 }

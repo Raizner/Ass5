@@ -22,8 +22,14 @@ namespace {
 	list<pair<int, int>> edgeslist;
 }
 
+enum searchTypeEnum {
+	HillClimbing = 0,
+	TabuSearch,
+	SimulatedAnnealing
 
+};
 
+typedef enum searchTypeEnum searchType;
 
 
 class Graph
@@ -37,15 +43,15 @@ private:
 	void tabuSearch();
 	void simulatedAnneling();
 	int calcFitness(array<size_t, N> *input = nullptr);
-	int findConflictVertex();
-	array<size_t, N> findAllConflictVertecies();
+	int findNumberConflictVertecies();
+	shared_ptr<array<size_t, N>> findAllConflictVertecies();
 	void printColoringVertices(ostream &out) const;
 	const int maxDensity;
 
 public:
 	Graph(array<array<bool, N>, N> &matrix, array<size_t, N> colors,int numberOfColors, list<pair<int, int>> &edges);
 	~Graph(void);
-	void RunLocalSearch();
+	void RunLocalSearch(bool toShuffle = true, searchType type = HillClimbing);
 	int CalcFitness();
 	int getColorNumberOfMinumumApperancesOfColorInVertices();
 	int getNumberOfVertices();

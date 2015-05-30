@@ -124,8 +124,8 @@ int getBestCitizenIndexTournamentOfFour(ga_struct citizen1,ga_struct citizen2,ga
 
 void mate(ga_vector &population, ga_vector &buffer)
 {
-	int esize = GA_POPSIZE * GA_ELITRATE;
-	int tsize = GA_TARGET.size(), spos, i1, i2,i3,i4,parent1Index,parent2Index;
+	int esize = static_cast<int>(static_cast<float>( GA_POPSIZE)* GA_ELITRATE);
+	int tsize = GA_TARGET.size(), i1, i2,i3,i4,parent1Index,parent2Index;
 
 	elitism(population, buffer, esize);
 
@@ -164,6 +164,15 @@ inline void swap(ga_vector *&population,
 				 ga_vector *&buffer)
 { ga_vector *temp = population; population = buffer; buffer = temp; }
 
+void explorating(ga_vector &population, bool flag = true, searchType type = HillClimbing){
+
+	for (int i = 0; i < GA_POPSIZE; i++)
+	{
+		population[i].graph->RunLocalSearch(flag, type);
+	}
+
+}
+
 int main()
 {
 	edgeslist = *Graph::createEdgesList();
@@ -178,6 +187,7 @@ int main()
 	buffer = &pop_beta;
 
 	for (int i=0; i<GA_MAXITER; i++) {
+		explorating(*population);
 		calc_fitness(*population);		// calculate fitness
 		sort_by_fitness(*population);	// sort them
 		print_best(*population);		// print the best one
