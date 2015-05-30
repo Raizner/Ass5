@@ -5,6 +5,8 @@
 
 #pragma warning(disable:4786)		// disable debug warning
 
+int maxDensityEdge;
+
 #include <iostream>					// for cout etc.
 #include <vector>					// for vector class
 #include <string>					// for string class
@@ -13,7 +15,7 @@
 #include <math.h>					// for abs()
 #include "Graph.h"
 
-#define GA_POPSIZE		2048		// ga population size
+#define GA_POPSIZE		10		// ga population size
 #define GA_MAXITER		16384		// maximum iterations
 #define GA_ELITRATE		0.10f		// elitism rate
 #define GA_MUTATIONRATE	0.25f		// mutation rate
@@ -44,7 +46,7 @@ void init_population(ga_vector &population,
 
 		//for (int j=0; j<tsize; j++)
 		//citizen.str += (rand() % 90) + 32;
-		shared_ptr<array<size_t,N>> colors = Graph::createRandomColors(N);
+		shared_ptr<array<size_t,N>> colors = Graph::createRandomColors(maxDensityEdge);
 		citizen.graph = new Graph(givenGraph,*colors,N, edgeslist);
 		population.push_back(citizen);
 		buffer.push_back(citizen);
@@ -194,12 +196,16 @@ int main()
 	buffer = &pop_beta;
 
 	for (int i=0; i<GA_MAXITER; i++) {
-		explorating(*population);
+		explorating(*population,false);
 		calc_fitness(*population);		// calculate fitness
 		sort_by_fitness(*population);	// sort them
 		print_best(*population);		// print the best one
 
-		if ((*population)[0].graph->doWeWantToStop()) break;
+		if ((*population)[0].graph->doWeWantToStop()){
+			getchar();
+			break;
+			
+		}
 
 		mate(*population, *buffer);		// mate the population together
 		swap(population, buffer);		// swap buffers
@@ -207,3 +213,5 @@ int main()
 
 	return 0;
 }
+
+

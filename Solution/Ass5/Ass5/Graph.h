@@ -5,22 +5,26 @@
 #include <tuple>
 #include <iostream>
 #include <ostream>
+#include <set>
 
 using namespace std;
+extern int maxDensityEdge;
+const size_t N = 5;
+extern list<pair<int, int>> edgeslist;
+extern array<int, N> densityVerticesNumber  ;
 
 namespace {
 
-	const int N = 3;
-	int maxDensityEdge;
+	
+	const size_t depth = 4; 
 	array<array<bool, N>, N> givenGraph = {{
-		{0,1,1},
-		{1,0,0},
-		{1,0,0}
+		{0,1,0,0,0},
+		{1,0,1,0,1},
+		{0,1,0,1,0},
+		{0,0,1,0,1},
+		{0,1,0,1,0},
 	}};
 
-
-	list<pair<int, int>> edgeslist;
-	array<int, N> densityVerticesNumber = {} ;
 }
 
 enum searchTypeEnum {
@@ -45,10 +49,14 @@ private:
 	void simulatedAnneling();
 	int calcFitness(array<size_t, N> *input = nullptr);
 	int findNumberConflictVertecies();
-	shared_ptr<list<pair<size_t, size_t>>> findAllConflictVertecies();
+	shared_ptr<list<pair<size_t, size_t>>> findAllConflictVertecies( array<size_t, N> *input_colors = nullptr);
 	void printColoringVertices(ostream &out) const;
 	const int maxDensity;
 	void reduceNumberOfColors();
+	void fixK();
+	set<int> getAllNeighboorsColors(size_t);
+	int getOtherColorOfNeighoorsNotIncludedForIndex(set<int>, size_t indexColor);
+	int countNumberOfColorsInGraph();
 
 public:
 	Graph(array<array<bool, N>, N> &matrix, array<size_t, N> colors,int numberOfColors, list<pair<int, int>> &edges);
@@ -59,7 +67,7 @@ public:
 	int getColorNumberOfMinumumApperancesOfColorInVertices(int whatColorToSkip);
 	int getNumberOfVertices();
 	int getVertexColorAtIndex(int index);
-	void setVertexColorAtIndex(int index,int color);
+	void setVertexColorAtIndex(int index,int color,shared_ptr< array<size_t, N>> colors=nullptr);
 	void changeAllVerteciesWithGivenColor(int colorToChange,int newColor);
 	bool doWeWantToStop();
 	void reduceKColorVariable();
@@ -81,20 +89,22 @@ public:
 	}
 
 	static int FindMaxDensityEdge(){
-		int max = 0;
+		int maximum = 0;
 		for (int i = 0; i < N; ++i)
 		{
 			int counterOfEdges=0;
-			for (int j = 0; j < N && j < i; ++j)
+			for (int j = 0; j < N; ++j)
 			{
 				if(givenGraph[i][j]==1){
 					++counterOfEdges;
 				}
 			}
+
 			densityVerticesNumber[i] = counterOfEdges;
-			max = (max <= counterOfEdges) ? counterOfEdges : max;
+
+			maximum = (counterOfEdges > maximum ) ? counterOfEdges : maximum;
 		}
-		return max;
+		return maximum;
 	}
 
 

@@ -1,11 +1,13 @@
 #include "stdafx.h"
 #include "Graph.h"
 
+list<pair<int, int>> edgeslist;
+array<int, N> densityVerticesNumber = {} ;
 
 Graph::Graph(array<array<bool, N>, N> &matrix, array<size_t, N> colors,int numberOfColors, list<pair<int, int>> &edges) :
 	p_matrix(matrix), p_colors(colors), kColor(numberOfColors), p_edges(edges),maxDensity(maxDensityEdge)
 {
-
+	fixK();
 }
 
 
@@ -77,8 +79,13 @@ int Graph::getVertexColorAtIndex(int index){
 	return p_colors[index];
 }
 
-void Graph::setVertexColorAtIndex(int index,int color){
-	p_colors[index]=color;
+void Graph::setVertexColorAtIndex(int index,int color,shared_ptr< array<size_t, N>> colors){
+	if(colors != nullptr){
+		(*colors)[index]=color;
+	}
+	else{
+		p_colors[index]=color;
+	}
 
 }
 
@@ -121,10 +128,10 @@ int Graph::CalcFitness(){
 
 void Graph::printColoringVertices(ostream &out) const{
 
-	cout << "Graph Colors: " ;
+	cout << "Graph Colors -  " ;
 	for (size_t i = 0; i < p_colors.size(); i++)
 	{
-		cout << i << ": " << p_colors[i] << ", ";
+		cout << i << ": " << p_colors[i] << "      ";
 	}
 	cout << ". K = " << kColor;
 
@@ -138,7 +145,7 @@ ostream &operator<<(ostream &out, const Graph &obj) {
 
 
 bool Graph::doWeWantToStop(){
-	if (kColor <= maxDensity)
+	if ((kColor <= 2) && CalcFitness() == 0)
 	{
 		return true;
 	}
@@ -155,26 +162,29 @@ void Graph::RunLocalSearch(bool toShuffle, searchType type){
 		{
 			type = static_cast<searchType>(rand() % 3);
 		}
-		switch (type)
+		for (int i = 0; i < depth; i++)
 		{
+			switch (type)
+			{
 
-		case HillClimbing:
-			hillClimbing();
-			break;
-		case TabuSearch:
-			tabuSearch();
-			break;
-		case SimulatedAnnealing:
-			simulatedAnneling();
-			break;
-		default:
-			break;
+			case HillClimbing:
+				hillClimbing();
+				break;
+			case TabuSearch:
+				tabuSearch();
+				break;
+			case SimulatedAnnealing:
+				simulatedAnneling();
+				break;
+			default:
+				break;
+			}
 		}
 		return;
 	}
 	else{
-		reduceNumberOfColors();
 		cout << "Reducing GOOD graph: " << (Graph)*this << endl;
+		reduceNumberOfColors();
 		return ;
 	}
 }
@@ -184,28 +194,111 @@ void Graph::reduceNumberOfColors(){
 	//First will try to reduce the color which appears the least
 	if (kColor > 2)
 	{
-		cout << "1" << endl << flush;
 		int minColor = getColorNumberOfMinumumApperancesOfColorInVertices(); // finding the color that appear the minimum times
-		cout << "2" << endl << flush;
 		int colorToPut = getColorNumberOfMinumumApperancesOfColorInVertices(minColor); // Same just ignoring the minColor color
-		cout << "3" << endl << flush;
 		changeAllVerteciesWithGivenColor(minColor,colorToPut);
-		cout << "4" << endl << flush;
 		if(minColor != kColor){
 			changeAllVerteciesWithGivenColor(kColor,minColor);
 		}
-		cout << "colorToPut: "  << colorToPut << " minColor: " << minColor << endl << flush ;
 		reduceKColorVariable();
-		cout << "5" << endl << flush;
 	}
 
 	return;
 }
 
+int Graph::countNumberOfColorsInGraph(){
+
+	set<int> listOfColors;
+	for (int i = 0; i < N; i++)
+	{
+		listOfColors.insert(p_colors[i]);
+	}
+	return listOfColors.size();
+}
+
+set<int> Graph::getAllNeighboorsColors(size_t index){
+
+	set<int> listOfColors;
+	for (int i = 0; i < N; i++)
+	{
+		if (givenGraph[index][i])
+		{
+			listOfColors.insert(p_colors[i]);
+		}
+	}
+
+	return listOfColors;
+
+}
+
+int Graph::getOtherColorOfNeighoorsNotIncludedForIndex(set<int> neighboorsColors, size_t indexColor){
+	neighboorsColors.insert(indexColor);
+
+	if (kColor == neighboorsColors.size())
+	{
+		return -1;
+	}
+
+	for (int i = 0; i < kColor; i++)
+	{
+		if (neighboorsColors.find(i) == neighboorsColors.end()) // if didn't find it returns iterator to end
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
 void Graph::hillClimbing(){
+	shared_ptr<list<pair<size_t, size_t>>> conflictVertices = findAllConflictVertecies();
+	list<array<size_t, N>> neighboors ;
+	for (list<pair<size_t, size_t>>::iterator it= (*conflictVertices).begin();  it != (*conflictVertices).end() ; it++)
+	{
+
+		pair<size_t, size_t> tempVertex = *it;
+		//size_t indexOfVetex = densityVerticesNumber[tempVertex.first] <= densityVerticesNumber[tempVertex.second] ? tempVertex.first : tempVertex.second;
+		size_t indexOfVetex = tempVertex.first;
+		set<int> neighborsColors = getAllNeighboorsColors(indexOfVetex);
+		int colorToPut = getOtherColorOfNeighoorsNotIncludedForIndex(neighborsColors,p_colors[indexOfVetex]);
+		if(colorToPut == -1){
+			colorToPut = (p_colors[indexOfVetex] - 1) % kColor;
+		}
+		shared_ptr<array<size_t, N>> newColoring ( new array<size_t, N>());
+		for (int i = 0; i < N; i++)
+		{
+			(*newColoring)[i] = p_colors[i];
+		}
+		this->setVertexColorAtIndex(indexOfVetex,colorToPut,newColoring);
+		neighboors.push_back(*newColoring);
+
+	}
+	int minFitness = N * N * 7;
+
+	list<array<size_t, N>>::iterator bestFitnessIterator = neighboors.end() ;
+	for (list<array<size_t, N>>::iterator it = neighboors.begin(); it != neighboors.end(); it++)
+	{
+
+		int tempFitness = calcFitness(&(*it));
+		if(minFitness > tempFitness){
+			minFitness = tempFitness;
+			bestFitnessIterator=it;
+		}
 
 
+	}
 
+	if (bestFitnessIterator != neighboors.end())
+	{
+		for (int i = 0; i < N; i++)
+		{
+			p_colors[i] = (*bestFitnessIterator)[i];
+		}
+	}
+
+
+	kColor = countNumberOfColorsInGraph();
+	fixK();
+	return;
 }
 
 void Graph::tabuSearch(){
@@ -222,17 +315,28 @@ void Graph::simulatedAnneling(){
 }
 
 
-shared_ptr<list<pair<size_t, size_t>>> Graph::findAllConflictVertecies(){
+shared_ptr<list<pair<size_t, size_t>>> Graph::findAllConflictVertecies(array<size_t, N> *input_colors){
+
 	shared_ptr<list<pair<size_t, size_t>>> confictsVertices(new list<pair<size_t, size_t>>());
 
-	int conflictsNumbers[N];
+	array<size_t, N> *temp_colors;
+
+	if (input_colors != nullptr)
+	{
+		temp_colors = input_colors;
+	}
+	else {
+		temp_colors = &p_colors;
+
+	}
+	int conflictsNumbers[N] = {0};
 
 	list<pair<int, int>>::iterator it = p_edges.begin();
 	for (; it != p_edges.end(); ++it)
 	{
-		if (p_colors[it->first] == p_colors[it->second])
+		if ((*temp_colors)[it->first] == (*temp_colors)[it->second])
 		{
-			++((conflictsNumbers)[ densityVerticesNumber[it->first] < densityVerticesNumber[it->second] ? it->first : it->second ]);
+			++((conflictsNumbers)[( densityVerticesNumber[it->first] < densityVerticesNumber[it->second] ) ? it->first : it->second ]);
 		}
 	}
 
@@ -266,5 +370,50 @@ void Graph::reduceKColorVariable(){
 	if(kColor>1){
 		kColor-=1;
 	}
+	return;
+}
+
+
+void Graph::fixK(){
+	bool *colorUsed = new bool[maxDensity];
+
+	for (int i = 0; i < maxDensity; i++)
+	{
+		colorUsed[i] = false;
+	}
+
+	for (int i = 0; i < N; i++)
+	{
+		colorUsed[p_colors[i]] = true;
+	}
+
+	int realNumberOfColorsUsed = 0;
+
+	for (int i = 0; i < maxDensity; i++)
+	{
+		colorUsed[i] ? realNumberOfColorsUsed++ : (void)0 ;
+	}
+
+	int beginPointer = 0;
+	int endPointer = maxDensity - 1;
+
+	while (beginPointer < endPointer)
+	{
+		if (colorUsed[beginPointer] == false)
+		{
+			if (colorUsed[endPointer] == true)
+			{
+				changeAllVerteciesWithGivenColor(endPointer, beginPointer);
+				beginPointer++;
+			}
+			endPointer--;
+		}
+		else {
+			beginPointer++;
+		}
+	}
+	kColor = realNumberOfColorsUsed;
+
+	delete colorUsed;
 	return;
 }
