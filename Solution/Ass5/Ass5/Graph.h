@@ -63,6 +63,7 @@ public:
 	void changeAllVerteciesWithGivenColor(int colorToChange,int newColor);
 	bool doWeWantToStop();
 	void reduceKColorVariable();
+	int getKColor();
 
 
 

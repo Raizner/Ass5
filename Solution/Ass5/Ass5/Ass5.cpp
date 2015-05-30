@@ -38,18 +38,17 @@ void init_population(ga_vector &population,
 
 	for (int i=0; i<GA_POPSIZE; i++) {
 		ga_struct citizen;
-		
+
 		citizen.fitness = 0;
 		citizen.str.erase();
 
 		//for (int j=0; j<tsize; j++)
-			//citizen.str += (rand() % 90) + 32;
+		//citizen.str += (rand() % 90) + 32;
 		shared_ptr<array<size_t,N>> colors = Graph::createRandomColors(N);
 		citizen.graph = new Graph(givenGraph,*colors,N, edgeslist);
 		population.push_back(citizen);
+		buffer.push_back(citizen);
 	}
-
-	buffer.resize(GA_POPSIZE);
 }
 
 void calc_fitness(ga_vector &population)
@@ -61,7 +60,7 @@ void calc_fitness(ga_vector &population)
 	for (int i=0; i<GA_POPSIZE; i++) {
 		fitness = 0;
 		/*for (int j=0; j<tsize; j++) {
-			fitness += abs(int(population[i].str[j] - target[j]));
+		fitness += abs(int(population[i].str[j] - target[j]));
 		}*/
 		fitness=population[i].graph->CalcFitness();
 		population[i].fitness = fitness;
@@ -75,7 +74,7 @@ inline void sort_by_fitness(ga_vector &population)
 { sort(population.begin(), population.end(), fitness_sort); }
 
 void elitism(ga_vector &population, 
-				ga_vector &buffer, int esize )
+			 ga_vector &buffer, int esize )
 {
 	for (int i=0; i<esize; i++) {
 		buffer[i].str = population[i].str;
@@ -91,25 +90,31 @@ void mutate(ga_struct &member)
 
 	member.str[ipos] = ((member.str[ipos] + delta) % 122);*/
 	/*CSM mutation */
+	if (member.graph->getKColor() <= 2)
+	{
+		return;
+	}
 	int minimumColor = member.graph->getColorNumberOfMinumumApperancesOfColorInVertices();
-	int colorPlace = rand()%member.graph->getNumberOfVertices();
+	int colorPlace = rand() % N;
 	int color = member.graph->getVertexColorAtIndex(colorPlace);
-	while(color==minimumColor){//We found vertex with same color , as minimum ,must be changed.
-		colorPlace = rand()%member.graph->getNumberOfVertices();
+
+	for (int i = 0; i < 200 && color == minimumColor; i++)
+	{
+		colorPlace = rand() % N ;
 		color = member.graph->getVertexColorAtIndex(colorPlace);
 	}
 	member.graph->changeAllVerteciesWithGivenColor(minimumColor,color);
-	member.graph->reduceKColorVariable();
+	member.graph->setVertexColorAtIndex(colorPlace,color);
 	return;
 }
 
 void UniformMating(ga_struct parent1,ga_struct parent2 , ga_struct offspring){
-	for(int i=0;i<parent1.graph->getNumberOfVertices();i++){
-		int coin = rand()%2;
-		if(coin==1){
-			offspring.graph->setVertexColorAtIndex(i,parent1.graph->getVertexColorAtIndex(i));
+	for(int i = 0 ; i < N ; i++){
+		int coin = rand() % 2;
+		if( coin == 1 ){
+			offspring.graph->setVertexColorAtIndex(i , parent1.graph->getVertexColorAtIndex(i));
 		}else{
-			offspring.graph->setVertexColorAtIndex(i,parent2.graph->getVertexColorAtIndex(i));
+			offspring.graph->setVertexColorAtIndex(i , parent2.graph->getVertexColorAtIndex(i));
 		}
 	}
 	return;
@@ -145,11 +150,12 @@ void mate(ga_vector &population, ga_vector &buffer)
 		parent2Index = getBestCitizenIndexTournamentOfFour(population[i1],population[i2],population[i3],population[i4],i1,i2,i3,i4);
 		/* Uniform Mating :
 		buffer[i].str = population[i1].str.substr(0, spos) + 
-			            population[i2].str.substr(spos, tsize - spos);
-*/
+		population[i2].str.substr(spos, tsize - spos);
+		*/
 		UniformMating(population[parent1Index],population[parent2Index],buffer[i]);
 		if (rand() < GA_MUTATION) mutate(buffer[i]);
 	}
+
 }
 
 

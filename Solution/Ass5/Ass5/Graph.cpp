@@ -17,14 +17,19 @@ int Graph::getColorNumberOfMinumumApperancesOfColorInVertices(int whatColorToSki
 	int tempMimimum = -1;
 	int minumumColorNumber = -1;
 	int *colorArray = new int[kColor];
+
+	for (int i = 0; i < kColor; i++)
+	{
+		colorArray[i] = 0;
+	}
 	for (int i = 0; i < N; ++i)
 	{
 		++(colorArray[p_colors[i]]);
 	}
 
-	for (int i = 0; i < N; i++)
+	for (int i = 0; i < kColor; i++)
 	{
-		if (tempMimimum < colorArray[i] && whatColorToSkip!=i)
+		if (tempMimimum < colorArray[i] && whatColorToSkip != i)
 		{
 			tempMimimum = colorArray[i];
 			minumumColorNumber = i;
@@ -38,18 +43,22 @@ int Graph::getColorNumberOfMinumumApperancesOfColorInVertices(int whatColorToSki
 int Graph::getColorNumberOfMinumumApperancesOfColorInVertices(){
 
 	int tempMimimum = -1;
-	int minumumColorNumber = -1;
+	int minumumColorNumber = 0;
 	int *colorArray = new int[kColor];
 
-
+	for (int i = 0; i < kColor; i++)
+	{
+		colorArray[i] = 0;
+	}
 	for (int i = 0; i < N; ++i)
 	{
 		++(colorArray[p_colors[i]]);
 	}
+	tempMimimum = colorArray[0];
 
-	for (int i = 0; i < N; i++)
+	for (int i = 0; i < kColor; i++)
 	{
-		if (tempMimimum < colorArray[i])
+		if (tempMimimum <= colorArray[i])
 		{
 			tempMimimum = colorArray[i];
 			minumumColorNumber = i;
@@ -65,7 +74,7 @@ int Graph::getNumberOfVertices(){
 }
 
 int Graph::getVertexColorAtIndex(int index){
-	return p_colors.at(index);
+	return p_colors[index];
 }
 
 void Graph::setVertexColorAtIndex(int index,int color){
@@ -74,10 +83,10 @@ void Graph::setVertexColorAtIndex(int index,int color){
 }
 
 void Graph::changeAllVerteciesWithGivenColor(int colorToChange,int newColor){
-	for (size_t i = 0; i < p_colors.size(); i++)
+	for (size_t i = 0; i < N; i++)
 	{
-		if(p_colors.at(i)==colorToChange){
-			p_colors.at(i)=newColor;
+		if(p_colors[i] == colorToChange){
+			p_colors[i] = newColor;
 		}
 	}
 }
@@ -139,8 +148,9 @@ bool Graph::doWeWantToStop(){
 
 void Graph::RunLocalSearch(bool toShuffle, searchType type){
 	int numberOfConflicts = 0;
-	numberOfConflicts=this->findNumberConflictVertecies();
-	if(numberOfConflicts>0){
+	numberOfConflicts = this->findNumberConflictVertecies();
+
+	if( numberOfConflicts > 0 ){
 		if (toShuffle)
 		{
 			type = static_cast<searchType>(rand() % 3);
@@ -164,6 +174,7 @@ void Graph::RunLocalSearch(bool toShuffle, searchType type){
 	}
 	else{
 		reduceNumberOfColors();
+		cout << "Reducing GOOD graph: " << (Graph)*this << endl;
 		return ;
 	}
 }
@@ -171,10 +182,23 @@ void Graph::RunLocalSearch(bool toShuffle, searchType type){
 
 void Graph::reduceNumberOfColors(){
 	//First will try to reduce the color which appears the least
-	int minColor=getColorNumberOfMinumumApperancesOfColorInVertices();
-	int colorToPut = getColorNumberOfMinumumApperancesOfColorInVertices(minColor);
-	changeAllVerteciesWithGivenColor(minColor,colorToPut);
-	reduceKColorVariable();
+	if (kColor > 2)
+	{
+		cout << "1" << endl << flush;
+		int minColor = getColorNumberOfMinumumApperancesOfColorInVertices(); // finding the color that appear the minimum times
+		cout << "2" << endl << flush;
+		int colorToPut = getColorNumberOfMinumumApperancesOfColorInVertices(minColor); // Same just ignoring the minColor color
+		cout << "3" << endl << flush;
+		changeAllVerteciesWithGivenColor(minColor,colorToPut);
+		cout << "4" << endl << flush;
+		if(minColor != kColor){
+			changeAllVerteciesWithGivenColor(kColor,minColor);
+		}
+		cout << "colorToPut: "  << colorToPut << " minColor: " << minColor << endl << flush ;
+		reduceKColorVariable();
+		cout << "5" << endl << flush;
+	}
+
 	return;
 }
 
@@ -226,6 +250,9 @@ shared_ptr<list<pair<size_t, size_t>>> Graph::findAllConflictVertecies(){
 
 }
 
+int Graph::getKColor(){
+	return kColor;
+}
 
 int Graph::findNumberConflictVertecies(){
 
