@@ -48,6 +48,7 @@ private:
 	shared_ptr<list<pair<size_t, size_t>>> findAllConflictVertecies();
 	void printColoringVertices(ostream &out) const;
 	const int maxDensity;
+	void reduceNumberOfColors();
 
 public:
 	Graph(array<array<bool, N>, N> &matrix, array<size_t, N> colors,int numberOfColors, list<pair<int, int>> &edges);
@@ -55,11 +56,13 @@ public:
 	void RunLocalSearch(bool toShuffle = true, searchType type = HillClimbing);
 	int CalcFitness();
 	int getColorNumberOfMinumumApperancesOfColorInVertices();
+	int getColorNumberOfMinumumApperancesOfColorInVertices(int whatColorToSkip);
 	int getNumberOfVertices();
 	int getVertexColorAtIndex(int index);
 	void setVertexColorAtIndex(int index,int color);
 	void changeAllVerteciesWithGivenColor(int colorToChange,int newColor);
 	bool doWeWantToStop();
+	void reduceKColorVariable();
 
 
 

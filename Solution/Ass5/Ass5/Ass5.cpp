@@ -99,6 +99,7 @@ void mutate(ga_struct &member)
 		color = member.graph->getVertexColorAtIndex(colorPlace);
 	}
 	member.graph->changeAllVerteciesWithGivenColor(minimumColor,color);
+	member.graph->reduceKColorVariable();
 	return;
 }
 

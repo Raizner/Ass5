@@ -13,7 +13,27 @@ Graph::Graph(array<array<bool, N>, N> &matrix, array<size_t, N> colors,int numbe
 Graph::~Graph(void)
 {
 }
+int Graph::getColorNumberOfMinumumApperancesOfColorInVertices(int whatColorToSkip){
+	int tempMimimum = -1;
+	int minumumColorNumber = -1;
+	int *colorArray = new int[kColor];
+	for (int i = 0; i < N; ++i)
+	{
+		++(colorArray[p_colors[i]]);
+	}
 
+	for (int i = 0; i < N; i++)
+	{
+		if (tempMimimum < colorArray[i] && whatColorToSkip!=i)
+		{
+			tempMimimum = colorArray[i];
+			minumumColorNumber = i;
+		}
+	}
+	delete colorArray;
+	return minumumColorNumber;
+
+}
 
 int Graph::getColorNumberOfMinumumApperancesOfColorInVertices(){
 
@@ -120,27 +140,43 @@ bool Graph::doWeWantToStop(){
 void Graph::RunLocalSearch(bool toShuffle, searchType type){
 	int numberOfConflicts = 0;
 	numberOfConflicts=this->findNumberConflictVertecies();
-	if (toShuffle)
-	{
-		type = static_cast<searchType>(rand() % 3);
-	}
-	switch (type)
-	{
+	if(numberOfConflicts>0){
+		if (toShuffle)
+		{
+			type = static_cast<searchType>(rand() % 3);
+		}
+		switch (type)
+		{
 
-	case HillClimbing:
-		hillClimbing();
-		break;
-	case TabuSearch:
-		tabuSearch();
-		break;
-	case SimulatedAnnealing:
-		simulatedAnneling();
-		break;
-	default:
-		break;
+		case HillClimbing:
+			hillClimbing();
+			break;
+		case TabuSearch:
+			tabuSearch();
+			break;
+		case SimulatedAnnealing:
+			simulatedAnneling();
+			break;
+		default:
+			break;
+		}
+		return;
+	}
+	else{
+		reduceNumberOfColors();
+		return ;
 	}
 }
 
+
+void Graph::reduceNumberOfColors(){
+	//First will try to reduce the color which appears the least
+	int minColor=getColorNumberOfMinumumApperancesOfColorInVertices();
+	int colorToPut = getColorNumberOfMinumumApperancesOfColorInVertices(minColor);
+	changeAllVerteciesWithGivenColor(minColor,colorToPut);
+	reduceKColorVariable();
+	return;
+}
 
 void Graph::hillClimbing(){
 
@@ -196,4 +232,12 @@ int Graph::findNumberConflictVertecies(){
 	list<pair<size_t, size_t>> temp = * findAllConflictVertecies();
 
 	return temp.size();
+}
+
+
+void Graph::reduceKColorVariable(){
+	if(kColor>1){
+		kColor-=1;
+	}
+	return;
 }
