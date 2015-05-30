@@ -42,9 +42,10 @@ void init_population(ga_vector &population,
 		citizen.fitness = 0;
 		citizen.str.erase();
 
-		for (int j=0; j<tsize; j++)
-			citizen.str += (rand() % 90) + 32;
-
+		//for (int j=0; j<tsize; j++)
+			//citizen.str += (rand() % 90) + 32;
+		shared_ptr<array<size_t,N>> colors = Graph::createRandomColors(N);
+		citizen.graph = new Graph(givenGraph,*colors,N, edgeslist);
 		population.push_back(citizen);
 	}
 
@@ -59,10 +60,10 @@ void calc_fitness(ga_vector &population)
 
 	for (int i=0; i<GA_POPSIZE; i++) {
 		fitness = 0;
-		for (int j=0; j<tsize; j++) {
+		/*for (int j=0; j<tsize; j++) {
 			fitness += abs(int(population[i].str[j] - target[j]));
-		}
-		
+		}*/
+		fitness=population[i].graph->CalcFitness();
 		population[i].fitness = fitness;
 	}
 }
