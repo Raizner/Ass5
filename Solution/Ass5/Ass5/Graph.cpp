@@ -162,17 +162,38 @@ void Graph::simulatedAnneling(){
 }
 
 
-shared_ptr<array<size_t, N>> Graph::findAllConflictVertecies(){
-	shared_ptr<array<size_t, N>> a(new array<size_t, N>());
+shared_ptr<list<pair<size_t, size_t>>> Graph::findAllConflictVertecies(){
+	shared_ptr<list<pair<size_t, size_t>>> confictsVertices(new list<pair<size_t, size_t>>());
 
-	return a;
+	int conflictsNumbers[N];
+
+	list<pair<int, int>>::iterator it = p_edges.begin();
+	for (; it != p_edges.end(); ++it)
+	{
+		if (p_colors[it->first] == p_colors[it->second])
+		{
+			++((conflictsNumbers)[ densityVerticesNumber[it->first] < densityVerticesNumber[it->second] ? it->first : it->second ]);
+		}
+	}
+
+	for (int i = 0; i < N; i++)
+	{
+		if (conflictsNumbers[i] > 0)
+		{
+			shared_ptr<pair<size_t, size_t>> newPair( new pair<size_t,size_t>(i, conflictsNumbers[i]));
+
+			(*confictsVertices).push_back(*newPair);
+		}
+	}
+
+	return confictsVertices;
 
 }
 
 
 int Graph::findNumberConflictVertecies(){
 
-	array<size_t, N> temp = * findAllConflictVertecies();
+	list<pair<size_t, size_t>> temp = * findAllConflictVertecies();
 
 	return temp.size();
 }

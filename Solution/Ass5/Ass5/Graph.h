@@ -13,13 +13,14 @@ namespace {
 	const int N = 3;
 	int maxDensityEdge;
 	array<array<bool, N>, N> givenGraph = {{
-	{0,1,1},
-	{1,0,0},
-	{1,0,0}
-}};
+		{0,1,1},
+		{1,0,0},
+		{1,0,0}
+	}};
 
 
 	list<pair<int, int>> edgeslist;
+	array<int, N> densityVerticesNumber = {} ;
 }
 
 enum searchTypeEnum {
@@ -44,7 +45,7 @@ private:
 	void simulatedAnneling();
 	int calcFitness(array<size_t, N> *input = nullptr);
 	int findNumberConflictVertecies();
-	shared_ptr<array<size_t, N>> findAllConflictVertecies();
+	shared_ptr<list<pair<size_t, size_t>>> findAllConflictVertecies();
 	void printColoringVertices(ostream &out) const;
 	const int maxDensity;
 
@@ -74,18 +75,19 @@ public:
 		}
 		return temp;
 	}
-	
+
 	static int FindMaxDensityEdge(){
 		int max = 0;
-		for (int i = 0; i < N; i++)
+		for (int i = 0; i < N; ++i)
 		{
 			int counterOfEdges=0;
-			for (int j = 0; j < N && j < i; j++)
+			for (int j = 0; j < N && j < i; ++j)
 			{
 				if(givenGraph[i][j]==1){
-					counterOfEdges++;
+					++counterOfEdges;
 				}
 			}
+			densityVerticesNumber[i] = counterOfEdges;
 			max = (max <= counterOfEdges) ? counterOfEdges : max;
 		}
 		return max;
@@ -93,7 +95,7 @@ public:
 
 
 	static shared_ptr<list<pair<int, int>>> createEdgesList(){
-	
+
 		shared_ptr<list<pair<int, int>>> temp(new list<pair<int, int>>());
 
 		for (int i = 0; i < N; i++)
