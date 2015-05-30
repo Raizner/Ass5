@@ -155,6 +155,7 @@ bool Graph::doWeWantToStop(){
 
 void Graph::RunLocalSearch(bool toShuffle, searchType type){
 	int numberOfConflicts = 0;
+	list<array<size_t,N>> *tabuMoves = new list<array<size_t,N>>();
 	numberOfConflicts = this->findNumberConflictVertecies();
 
 	if( numberOfConflicts > 0 ){
@@ -171,7 +172,7 @@ void Graph::RunLocalSearch(bool toShuffle, searchType type){
 				hillClimbing();
 				break;
 			case TabuSearch:
-				tabuSearch();
+				tabuSearch(*tabuMoves);
 				break;
 			case SimulatedAnnealing:
 				simulatedAnneling();
@@ -301,8 +302,63 @@ void Graph::hillClimbing(){
 	return;
 }
 
-void Graph::tabuSearch(){
+void Graph::tabuSearch(list<array<size_t,N>> & tabuList ){
+	shared_ptr<list<pair<size_t, size_t>>> conflictVertices = findAllConflictVertecies();
+	list<array<size_t, N>> neighboors ;
+	for (list<pair<size_t, size_t>>::iterator it= (*conflictVertices).begin();  it != (*conflictVertices).end() ; it++)
+	{
 
+		pair<size_t, size_t> tempVertex = *it;
+		//size_t indexOfVetex = densityVerticesNumber[tempVertex.first] <= densityVerticesNumber[tempVertex.second] ? tempVertex.first : tempVertex.second;
+		size_t indexOfVetex = tempVertex.first;
+		set<int> neighborsColors = getAllNeighboorsColors(indexOfVetex);
+		int colorToPut = getOtherColorOfNeighoorsNotIncludedForIndex(neighborsColors,p_colors[indexOfVetex]);
+		if(colorToPut == -1){
+			colorToPut = (p_colors[indexOfVetex] - 1) % kColor;
+		}
+		shared_ptr<array<size_t, N>> newColoring ( new array<size_t, N>());
+		for (int i = 0; i < N; i++)
+		{
+			(*newColoring)[i] = p_colors[i];
+		}
+		this->setVertexColorAtIndex(indexOfVetex,colorToPut,newColoring);
+		pair<size_t, size_t> temp(p_colors[indexOfVetex], colorToPut);
+		neighboors.push_back(*newColoring);
+
+	}
+	int minFitness = N * N * 7;
+
+	list<array<size_t, N>>::iterator bestFitnessIterator = neighboors.end() ;
+	for (list<array<size_t, N>>::iterator it = neighboors.begin(); it != neighboors.end(); it++)
+	{
+		int flagSkip=0;
+		for (list<array<size_t,N>>::iterator listIterator = tabuList.begin(); listIterator != tabuList.end(); listIterator++)
+		{
+			if((*listIterator)==(*it))
+			{
+				flagSkip=1;
+			}
+		}
+		if(!flagSkip){
+			int tempFitness = calcFitness(&(*it));
+			if(minFitness > tempFitness){
+				minFitness = tempFitness;
+				bestFitnessIterator=it;
+			}
+		}
+	}
+	if (bestFitnessIterator != neighboors.end())
+	{
+		for (int i = 0; i < N; i++)
+		{
+			p_colors[i] = (*bestFitnessIterator)[i];
+		}
+	}
+
+
+	kColor = countNumberOfColorsInGraph();
+	fixK();
+	return;
 
 
 

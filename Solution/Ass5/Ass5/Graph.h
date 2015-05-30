@@ -45,7 +45,7 @@ private:
 	array<size_t, N> p_colors;
 	int kColor;
 	void hillClimbing();
-	void tabuSearch();
+	void tabuSearch(list<array<size_t,N>> & tabuList );
 	void simulatedAnneling();
 	int calcFitness(array<size_t, N> *input = nullptr);
 	int findNumberConflictVertecies();

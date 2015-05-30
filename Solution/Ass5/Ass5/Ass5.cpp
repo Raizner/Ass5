@@ -196,7 +196,7 @@ int main()
 	buffer = &pop_beta;
 
 	for (int i=0; i<GA_MAXITER; i++) {
-		explorating(*population,false);
+		explorating(*population,false,TabuSearch);
 		calc_fitness(*population);		// calculate fitness
 		sort_by_fitness(*population);	// sort them
 		print_best(*population);		// print the best one
