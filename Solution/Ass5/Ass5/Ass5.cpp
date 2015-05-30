@@ -154,7 +154,10 @@ void mate(ga_vector &population, ga_vector &buffer)
 
 
 inline void print_best(ga_vector &gav)
-{ cout << "Best: " << gav[0].str << " (" << gav[0].fitness << ")" << endl; }
+{ 
+	cout << "Best: " << gav[0].graph->printColoringVertices << " (" << gav[0].fitness << ")" << endl; 
+
+}
 
 inline void swap(ga_vector *&population,
 				 ga_vector *&buffer)

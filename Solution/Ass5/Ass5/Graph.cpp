@@ -86,3 +86,14 @@ int Graph::CalcFitness(){
 
 	return calcFitness(nullptr);
 }
+
+
+ostream& Graph::printColoringVertices(std::ostream* out){
+
+	*out << "Graph Colors: " ;
+	for (int i = 0; i < p_colors.size(); i++)
+	{
+		*out << i << ": " << p_colors[i] << " ";
+	}
+	return *out;
+}

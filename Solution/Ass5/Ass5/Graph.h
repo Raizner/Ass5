@@ -3,6 +3,8 @@
 #include <list>
 #include <memory>
 #include <tuple>
+#include <iostream>
+#include <ostream>
 
 using namespace std;
 
@@ -49,6 +51,8 @@ public:
 	int getVertexColorAtIndex(int index);
 	void setVertexColorAtIndex(int index,int color);
 	void changeAllVerteciesWithGivenColor(int colorToChange,int newColor);
+	ostream& printColoringVertices(std::ostream* out);
+
 	static shared_ptr<array<size_t, N>> createRandomColors(int maxColors){
 
 		shared_ptr<array<size_t, N>> temp(new array<size_t, N>());
