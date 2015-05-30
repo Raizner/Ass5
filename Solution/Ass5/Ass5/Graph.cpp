@@ -88,12 +88,28 @@ int Graph::CalcFitness(){
 }
 
 
-ostream& Graph::printColoringVertices(std::ostream* out){
+void Graph::printColoringVertices(ostream &out) const{
 
-	*out << "Graph Colors: " ;
+	cout << "Graph Colors: " ;
 	for (int i = 0; i < p_colors.size(); i++)
 	{
-		*out << i << ": " << p_colors[i] << " ";
+		cout << i << ": " << p_colors[i] << ", ";
 	}
-	return *out;
+	cout << ". K = " << kColor;
+
+}
+
+
+ostream &operator<<(ostream &out, const Graph &obj) {
+    obj.printColoringVertices(out);
+	return out;	
+}
+
+
+bool Graph::doWeWantToStop(){
+	if (kColor <= maxDensity)
+	{
+		return true;
+	}
+	return false;
 }

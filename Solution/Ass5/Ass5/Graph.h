@@ -39,7 +39,8 @@ private:
 	int calcFitness(array<size_t, N> *input = nullptr);
 	int findConflictVertex();
 	array<size_t, N> findAllConflictVertecies();
-	
+	void printColoringVertices(ostream &out) const;
+	const int maxDensity;
 
 public:
 	Graph(array<array<bool, N>, N> &matrix, array<size_t, N> colors,int numberOfColors, list<pair<int, int>> &edges);
@@ -51,7 +52,11 @@ public:
 	int getVertexColorAtIndex(int index);
 	void setVertexColorAtIndex(int index,int color);
 	void changeAllVerteciesWithGivenColor(int colorToChange,int newColor);
-	ostream& printColoringVertices(std::ostream* out);
+	bool doWeWantToStop();
+
+
+
+	friend ostream &operator<<(ostream &out, const Graph &obj);
 
 	static shared_ptr<array<size_t, N>> createRandomColors(int maxColors){
 

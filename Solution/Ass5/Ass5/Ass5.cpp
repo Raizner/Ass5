@@ -156,7 +156,7 @@ void mate(ga_vector &population, ga_vector &buffer)
 
 inline void print_best(ga_vector &gav)
 { 
-	cout << "Best: " << gav[0].graph->printColoringVertices << " (" << gav[0].fitness << ")" << endl; 
+	cout << "Best: " << *gav[0].graph << "...Fitness (" << gav[0].fitness << ")" << endl; 
 
 }
 
@@ -182,7 +182,7 @@ int main()
 		sort_by_fitness(*population);	// sort them
 		print_best(*population);		// print the best one
 
-		if ((*population)[0].fitness == 0) break;
+		if ((*population)[0].graph->doWeWantToStop()) break;
 
 		mate(*population, *buffer);		// mate the population together
 		swap(population, buffer);		// swap buffers
