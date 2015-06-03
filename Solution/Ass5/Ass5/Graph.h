@@ -13,6 +13,8 @@ const size_t N = 5;
 extern list<pair<int, int>> edgeslist;
 extern array<int, N> densityVerticesNumber  ;
 
+extern int T;
+
 namespace {
 
 	
@@ -58,6 +60,8 @@ private:
 	int getOtherColorOfNeighoorsNotIncludedForIndex(set<int>, size_t indexColor);
 	int countNumberOfColorsInGraph();
 
+	int temprature;
+
 public:
 	Graph(array<array<bool, N>, N> &matrix, array<size_t, N> colors,int numberOfColors, list<pair<int, int>> &edges);
 	~Graph(void);
@@ -72,6 +76,8 @@ public:
 	bool doWeWantToStop();
 	void reduceKColorVariable();
 	int getKColor();
+	list<array<size_t, N>>::iterator* findAnelingMember( list<array<size_t, N>> & neighboors);
+
 
 
 

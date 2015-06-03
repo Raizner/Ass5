@@ -165,7 +165,7 @@ void mate(ga_vector &population, ga_vector &buffer)
 
 inline void print_best(ga_vector &gav)
 { 
-	cout << "Best: " << *gav[0].graph << "...Fitness (" << gav[0].fitness << ")" << endl; 
+	cout << "Best:              : " << *gav[0].graph << "...Fitness (" << gav[0].fitness << ")" << endl; 
 
 }
 
@@ -196,7 +196,7 @@ int main()
 	buffer = &pop_beta;
 
 	for (int i=0; i<GA_MAXITER; i++) {
-		explorating(*population,false,TabuSearch);
+		explorating(*population,false,SimulatedAnnealing);
 		calc_fitness(*population);		// calculate fitness
 		sort_by_fitness(*population);	// sort them
 		print_best(*population);		// print the best one

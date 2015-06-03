@@ -1,13 +1,16 @@
 #include "stdafx.h"
 #include "Graph.h"
 
+
 list<pair<int, int>> edgeslist;
 array<int, N> densityVerticesNumber = {} ;
+int T = 10;
 
 Graph::Graph(array<array<bool, N>, N> &matrix, array<size_t, N> colors,int numberOfColors, list<pair<int, int>> &edges) :
 	p_matrix(matrix), p_colors(colors), kColor(numberOfColors), p_edges(edges),maxDensity(maxDensityEdge)
 {
 	fixK();
+	temprature  = T;
 }
 
 
@@ -154,6 +157,7 @@ bool Graph::doWeWantToStop(){
 
 
 void Graph::RunLocalSearch(bool toShuffle, searchType type){
+	temprature   =   T;
 	int numberOfConflicts = 0;
 	list<array<size_t,N>> *tabuMoves = new list<array<size_t,N>>();
 	numberOfConflicts = this->findNumberConflictVertecies();
@@ -354,20 +358,83 @@ void Graph::tabuSearch(list<array<size_t,N>> & tabuList ){
 			p_colors[i] = (*bestFitnessIterator)[i];
 		}
 	}
-
-
 	kColor = countNumberOfColorsInGraph();
 	fixK();
 	return;
+}
 
-
-
+list<array<size_t, N>>::iterator* Graph::findAnelingMember( list<array<size_t, N>> & neighboors){
+	int myFitness = calcFitness();
+	list<array<size_t, N>>::iterator *bestFitnessIterator = new list<array<size_t, N>>::iterator();
+	*bestFitnessIterator = neighboors.end();
+	double p = 0;
+	for (list<array<size_t, N>>::iterator it = neighboors.begin(); it != neighboors.end(); it++)
+	{
+		int d = myFitness - calcFitness(&(*it));
+		double temp_p = exp( -static_cast<double>(d) / static_cast<double>(temprature));
+		if (temp_p > p)
+		{
+			p = temp_p;
+			*bestFitnessIterator = it;
+		}
+	}
+	return bestFitnessIterator;
 }
 
 void Graph::simulatedAnneling(){
+	shared_ptr<list<pair<size_t, size_t>>> conflictVertices = findAllConflictVertecies();
+	list<array<size_t, N>> neighboors ;
+	for (list<pair<size_t, size_t>>::iterator it= (*conflictVertices).begin();  it != (*conflictVertices).end() ; it++)
+	{
+		pair<size_t, size_t> tempVertex = *it;
+		//size_t indexOfVetex = densityVerticesNumber[tempVertex.first] <= densityVerticesNumber[tempVertex.second] ? tempVertex.first : tempVertex.second;
+		size_t indexOfVetex = tempVertex.first;
+		set<int> neighborsColors = getAllNeighboorsColors(indexOfVetex);
+		int colorToPut = getOtherColorOfNeighoorsNotIncludedForIndex(neighborsColors,p_colors[indexOfVetex]);
+		if(colorToPut == -1){
+			colorToPut = (p_colors[indexOfVetex] - 1) % kColor;
+		}
+		shared_ptr<array<size_t, N>> newColoring ( new array<size_t, N>());
+		for (int i = 0; i < N; i++)
+		{
+			(*newColoring)[i] = p_colors[i];
+		}
+		this->setVertexColorAtIndex(indexOfVetex,colorToPut,newColoring);
+		neighboors.push_back(*newColoring);
+	}
+	int minFitness = N * N * 7;
+	int bestFitnessAsNumber = 0;
+	list<array<size_t, N>>::iterator bestFitnessIterator = neighboors.end() ;
+	for (list<array<size_t, N>>::iterator it = neighboors.begin(); it != neighboors.end(); it++)
+	{
+
+		int tempFitness = calcFitness(&(*it));
+		if(minFitness > tempFitness){
+			minFitness = tempFitness;
+			bestFitnessIterator = it;
+			bestFitnessAsNumber = tempFitness;
+		}
+	}
+	if (neighboors.size() > 0)
+	{
+		if(bestFitnessAsNumber >= calcFitness()) {	}
+		else{
+			list<array<size_t, N>>::iterator *temp = findAnelingMember(neighboors);
+			bestFitnessIterator = *temp;
+		}
+
+		for (int i = 0; i < N; i++)
+		{
+			p_colors[i] = (*bestFitnessIterator)[i];
+		}
+
+		kColor = countNumberOfColorsInGraph();
+		fixK();
+	}
 
 
-
+	temprature--;
+	return;
 }
 
 
