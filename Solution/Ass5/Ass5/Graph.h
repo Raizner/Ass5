@@ -22,7 +22,7 @@ extern int T;
 namespace {
 
 	
-	const size_t depth = 4; 
+	const size_t depth = 2; 
 	//array<array<bool, N>, N> givenGraph = {{
 	//	{0,1,0,0,0},
 	//	{1,0,1,0,1},

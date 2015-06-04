@@ -233,7 +233,7 @@ string ExePath() {
 int main()
 {
 	cout << "my directory is " << ExePath() << "\n";
-	initMatrixForGraph(ExePath() + "\\graph.txt");
+	initMatrixForGraph(ExePath() + "\\graph20.txt");
 	edgeslist = *Graph::createEdgesList();
 	maxDensityEdge = Graph::FindMaxDensityEdge();
 	srand(unsigned(time(NULL)));
