@@ -15,7 +15,7 @@ int maxDensityEdge;
 #include <math.h>					// for abs()
 #include "Graph.h"
 
-#define GA_POPSIZE		10		// ga population size
+#define GA_POPSIZE		1000		// ga population size
 #define GA_MAXITER		16384		// maximum iterations
 #define GA_ELITRATE		0.10f		// elitism rate
 #define GA_MUTATIONRATE	0.25f		// mutation rate
@@ -67,6 +67,7 @@ void calc_fitness(ga_vector &population)
 		fitness=population[i].graph->CalcFitness();
 		population[i].fitness = fitness;
 	}
+
 }
 
 bool fitness_sort(ga_struct x, ga_struct y) 
@@ -81,6 +82,11 @@ void elitism(ga_vector &population,
 	for (int i=0; i<esize; i++) {
 		buffer[i].str = population[i].str;
 		buffer[i].fitness = population[i].fitness;
+		for (int j = 0; j < N; j++)
+		{
+			buffer[i].graph->p_colors[j] = population[i].graph->p_colors[j];
+		}
+		buffer[i].graph->kColor=population[i].graph->kColor;
 	}
 }
 
@@ -119,6 +125,8 @@ void UniformMating(ga_struct parent1,ga_struct parent2 , ga_struct offspring){
 			offspring.graph->setVertexColorAtIndex(i , parent2.graph->getVertexColorAtIndex(i));
 		}
 	}
+	offspring.graph->kColor = offspring.graph->countNumberOfColorsInGraph();
+	offspring.graph->fixK();
 	return;
 }
 
@@ -182,8 +190,41 @@ void explorating(ga_vector &population, bool flag = true, searchType type = Hill
 
 }
 
+
+void initMatrixForGraph(const string& filename)
+{
+	ifstream hostRefernceFile;
+	hostRefernceFile.open(filename);
+	string line;
+	int counter =0;
+	char* nextToken = "";
+	while (getline(hostRefernceFile, line)){
+		char *p = strtok_s((char*)line.c_str(), " ", &nextToken);
+		//char *p = strtok(myString, " ");
+		int x = 0;
+		int y = 0;
+		for (int i = 0; i < 3; i++)
+		{
+			
+			if (i == 1)
+			{
+				x = atoi(p);
+			}
+			if (i == 2)
+			{
+				y = atoi(p);
+			}
+			p = strtok_s(NULL, " ", &nextToken);
+		}
+		givenGraph[x-1][y-1] = true;
+
+	}
+	hostRefernceFile.close();
+}
+
 int main()
 {
+	initMatrixForGraph("c:\\temp\\graph.txt");
 	edgeslist = *Graph::createEdgesList();
 	maxDensityEdge = Graph::FindMaxDensityEdge();
 	srand(unsigned(time(NULL)));
@@ -204,7 +245,7 @@ int main()
 		if ((*population)[0].graph->doWeWantToStop()){
 			getchar();
 			break;
-			
+
 		}
 
 		mate(*population, *buffer);		// mate the population together
@@ -213,5 +254,7 @@ int main()
 
 	return 0;
 }
+
+
 
 

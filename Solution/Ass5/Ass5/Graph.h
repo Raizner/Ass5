@@ -6,26 +6,30 @@
 #include <iostream>
 #include <ostream>
 #include <set>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+
 
 using namespace std;
 extern int maxDensityEdge;
-const size_t N = 5;
+const size_t N = 20;
 extern list<pair<int, int>> edgeslist;
 extern array<int, N> densityVerticesNumber  ;
-
+extern array<array<bool, N>, N> givenGraph;
 extern int T;
 
 namespace {
 
 	
 	const size_t depth = 4; 
-	array<array<bool, N>, N> givenGraph = {{
-		{0,1,0,0,0},
-		{1,0,1,0,1},
-		{0,1,0,1,0},
-		{0,0,1,0,1},
-		{0,1,0,1,0},
-	}};
+	//array<array<bool, N>, N> givenGraph = {{
+	//	{0,1,0,0,0},
+	//	{1,0,1,0,1},
+	//	{0,1,0,1,0},
+	//	{0,0,1,0,1},
+	//	{0,1,0,1,0},
+	//}};
 
 }
 
@@ -41,7 +45,7 @@ typedef enum searchTypeEnum searchType;
 
 class Graph
 {
-private:
+public :
 	array<array<bool, N>, N> &p_matrix;
 	list<pair<int, int>> &p_edges;
 	array<size_t, N> p_colors;
@@ -62,7 +66,6 @@ private:
 
 	int temprature;
 
-public:
 	Graph(array<array<bool, N>, N> &matrix, array<size_t, N> colors,int numberOfColors, list<pair<int, int>> &edges);
 	~Graph(void);
 	void RunLocalSearch(bool toShuffle = true, searchType type = HillClimbing);
@@ -117,7 +120,6 @@ public:
 	static shared_ptr<list<pair<int, int>>> createEdgesList(){
 
 		shared_ptr<list<pair<int, int>>> temp(new list<pair<int, int>>());
-
 		for (int i = 0; i < N; i++)
 		{
 			for (int j = 0; j < N && j < i; j++)
@@ -130,9 +132,10 @@ public:
 			}
 
 		}
-
 		return temp;
 	}
+
+
 
 };
 

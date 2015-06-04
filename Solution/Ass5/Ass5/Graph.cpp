@@ -5,6 +5,7 @@
 list<pair<int, int>> edgeslist;
 array<int, N> densityVerticesNumber = {} ;
 int T = 10;
+array<array<bool, N>, N> givenGraph ={false};
 
 Graph::Graph(array<array<bool, N>, N> &matrix, array<size_t, N> colors,int numberOfColors, list<pair<int, int>> &edges) :
 	p_matrix(matrix), p_colors(colors), kColor(numberOfColors), p_edges(edges),maxDensity(maxDensityEdge)
@@ -120,7 +121,7 @@ int Graph::calcFitness(array<size_t, N> *input){
 			fitness += 7;
 		}
 	}
-	return fitness;
+	return fitness * kColor;
 }
 
 int Graph::CalcFitness(){
@@ -419,14 +420,17 @@ void Graph::simulatedAnneling(){
 	{
 		if(bestFitnessAsNumber >= calcFitness()) {	}
 		else{
+
 			list<array<size_t, N>>::iterator *temp = findAnelingMember(neighboors);
 			bestFitnessIterator = *temp;
+			delete(temp);
 		}
 
 		for (int i = 0; i < N; i++)
 		{
 			p_colors[i] = (*bestFitnessIterator)[i];
 		}
+
 
 		kColor = countNumberOfColorsInGraph();
 		fixK();
