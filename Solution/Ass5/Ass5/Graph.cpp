@@ -132,12 +132,12 @@ int Graph::CalcFitness(){
 
 void Graph::printColoringVertices(ostream &out) const{
 
-	cout << "Graph Colors -  " ;
+	out << "Graph Colors -  " ;
 	for (size_t i = 0; i < p_colors.size(); i++)
 	{
-		cout << i << ": " << p_colors[i] << "      ";
+		out << i << ": " << p_colors[i] << "      ";
 	}
-	cout << ". K = " << kColor;
+	out << ". K = " << kColor;
 
 }
 
