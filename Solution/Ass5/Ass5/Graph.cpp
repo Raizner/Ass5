@@ -189,7 +189,7 @@ void Graph::RunLocalSearch(bool toShuffle, searchType type){
 		return;
 	}
 	else{
-		cout << "Reducing GOOD graph: " << (Graph)*this << endl;
+		//cout << "Reducing GOOD graph: " << (Graph)*this << endl;
 		reduceNumberOfColors();
 		return ;
 	}
