@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include <windows.h>
 
 #pragma warning(disable:4786)		// disable debug warning
 
@@ -222,9 +223,17 @@ void initMatrixForGraph(const string& filename)
 	hostRefernceFile.close();
 }
 
+string ExePath() {
+    char buffer[MAX_PATH];
+    GetModuleFileName( NULL, buffer, MAX_PATH );
+    string::size_type pos = string( buffer ).find_last_of( "\\/" );
+    return string( buffer ).substr( 0, pos);
+}
+
 int main()
 {
-	initMatrixForGraph("c:\\temp\\graph.txt");
+	cout << "my directory is " << ExePath() << "\n";
+	initMatrixForGraph(ExePath() + "\\graph.txt");
 	edgeslist = *Graph::createEdgesList();
 	maxDensityEdge = Graph::FindMaxDensityEdge();
 	srand(unsigned(time(NULL)));
