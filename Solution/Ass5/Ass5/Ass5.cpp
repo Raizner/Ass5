@@ -172,9 +172,13 @@ void mate(ga_vector &population, ga_vector &buffer)
 
 
 
-inline void print_best(ga_vector &gav)
+inline void print_best(ga_vector &gav, int index, ofstream &
+					   outputFile)
 { 
-	cout << "Best:              : " << *gav[0].graph << "...Fitness (" << gav[0].fitness << ")" << endl; 
+	cout << index << ". Best:              : " << *gav[0].graph << "...Fitness (" << gav[0].fitness << ")" << endl; 
+
+
+	outputFile << index << ". Best:              : " << *gav[0].graph << "...Fitness (" << gav[0].fitness << ")" << endl;
 
 }
 
@@ -206,7 +210,7 @@ void initMatrixForGraph(const string& filename)
 		int y = 0;
 		for (int i = 0; i < 3; i++)
 		{
-			
+
 			if (i == 1)
 			{
 				x = atoi(p);
@@ -224,10 +228,10 @@ void initMatrixForGraph(const string& filename)
 }
 
 string ExePath() {
-    char buffer[MAX_PATH];
-    GetModuleFileName( NULL, buffer, MAX_PATH );
-    string::size_type pos = string( buffer ).find_last_of( "\\/" );
-    return string( buffer ).substr( 0, pos);
+	char buffer[MAX_PATH];
+	GetModuleFileName( NULL, buffer, MAX_PATH );
+	string::size_type pos = string( buffer ).find_last_of( "\\/" );
+	return string( buffer ).substr( 0, pos);
 }
 
 int main()
@@ -244,12 +248,12 @@ int main()
 	init_population(pop_alpha, pop_beta);
 	population = &pop_alpha;
 	buffer = &pop_beta;
-
-	for (int i=0; i<GA_MAXITER; i++) {
-		explorating(*population,false,SimulatedAnnealing);
+	ofstream outputFile("c:\\temp\\print_best.txt");
+	for (int i=0; i<50; i++) {
+		explorating(*population,false,HillClimbing);
 		calc_fitness(*population);		// calculate fitness
 		sort_by_fitness(*population);	// sort them
-		print_best(*population);		// print the best one
+		print_best(*population, i, outputFile);		// print the best one
 
 		if ((*population)[0].graph->doWeWantToStop()){
 			getchar();
