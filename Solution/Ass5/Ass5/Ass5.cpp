@@ -16,7 +16,7 @@ int maxDensityEdge;
 #include <math.h>					// for abs()
 #include "Graph.h"
 
-#define GA_POPSIZE		1024		// ga population size
+#define GA_POPSIZE		1000		// ga population size
 #define GA_MAXITER		16384		// maximum iterations
 #define GA_ELITRATE		0.30f		// elitism rate
 #define GA_MUTATIONRATE	0.25f		// mutation rate
@@ -296,7 +296,7 @@ string ExePath() {
 int main()
 {
 	cout << "my directory is " << ExePath() << "\n";
-	initMatrixForGraph(ExePath() + "\\graph20.txt");
+	initMatrixForGraph(ExePath() + "\\graph40.txt");
 	edgeslist = *Graph::createEdgesList();
 	maxDensityEdge = Graph::FindMaxDensityEdge();
 	srand(unsigned(time(NULL)));
@@ -307,8 +307,8 @@ int main()
 	init_population(pop_alpha, pop_beta);
 	population = &pop_alpha;
 	buffer = &pop_beta;
-	ofstream outputFile("c:\\temp\\print_best_e_03_aneal.txt");
-	for (int i=0; i<50; i++) {
+	ofstream outputFile("c:\\temp\\print_best_40_withK.txt");
+	for (int i=0; i< 50; i++) {
 		if (i > 0)
 		{
 			calc_fitness(*population);	

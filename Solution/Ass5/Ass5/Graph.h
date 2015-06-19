@@ -13,7 +13,7 @@
 
 using namespace std;
 extern int maxDensityEdge;
-const size_t N = 20;
+const size_t N = 40;
 extern list<pair<int, int>> edgeslist;
 extern array<int, N> densityVerticesNumber  ;
 extern array<array<bool, N>, N> givenGraph;
@@ -122,7 +122,8 @@ public :
 		shared_ptr<list<pair<int, int>>> temp(new list<pair<int, int>>());
 		for (int i = 0; i < N; i++)
 		{
-			for (int j = 0; j < N && j < i; j++)
+			//for (int j = 0; j < N && j < i; j++)
+			for (int j = 0; j < N; j++)
 			{
 				if (givenGraph[i][j])
 				{
