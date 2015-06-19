@@ -16,12 +16,15 @@ int maxDensityEdge;
 #include <math.h>					// for abs()
 #include "Graph.h"
 
-#define GA_POPSIZE		1000		// ga population size
+#define GA_POPSIZE		1024		// ga population size
 #define GA_MAXITER		16384		// maximum iterations
-#define GA_ELITRATE		0.10f		// elitism rate
+#define GA_ELITRATE		0.30f		// elitism rate
 #define GA_MUTATIONRATE	0.25f		// mutation rate
 #define GA_MUTATION		RAND_MAX * GA_MUTATIONRATE
 #define GA_TARGET		std::string("Hello world!")
+
+int g_minK = 9999;
+bool g_isMinChanged = false;
 
 using namespace std;				// polluting global namespace, but hey...
 
@@ -33,6 +36,14 @@ struct ga_struct
 };
 
 typedef vector<ga_struct> ga_vector;// for brevity
+
+void printAllKpopulation (ga_vector &population){
+
+	for (int i=0; i<GA_POPSIZE; i++) {
+
+		cout << "i: " << i << ", k = " << population[i].graph->getKColor() << endl;
+	}
+}
 
 void init_population(ga_vector &population,
 					 ga_vector &buffer ) 
@@ -54,20 +65,67 @@ void init_population(ga_vector &population,
 	}
 }
 
-void calc_fitness(ga_vector &population)
+void updateAllPopulationWithNewK(ga_vector &population){
+
+	for (int i=0; i<GA_POPSIZE; i++) {
+
+		int tempK = population[i].graph->getKColor();
+
+		for (int k = 0; k < (tempK - g_minK); k++)
+		{
+			//cout << "k: " << k<< endl;
+
+			//population[i].graph-> =  Graph::createRandomColors(g_minK);
+
+			population[i].graph->reduceNumberOfColors();
+			population[i].graph->kColor = population[i].graph->countNumberOfColorsInGraph();
+
+			population[i].graph->fixK();
+
+		}
+		population[i].graph->CalcFitness();
+
+	}
+	return;
+}
+
+void calc_fitness(ga_vector &population, bool calculateFitnessOnly = true)
 {
 	string target = GA_TARGET;
 	int tsize = target.size();
 	unsigned int fitness;
+	g_isMinChanged = false;
 
 	for (int i=0; i<GA_POPSIZE; i++) {
-		fitness = 0;
-		/*for (int j=0; j<tsize; j++) {
-		fitness += abs(int(population[i].str[j] - target[j]));
-		}*/
-		fitness=population[i].graph->CalcFitness();
-		population[i].fitness = fitness;
+		if (calculateFitnessOnly)
+		{
+			fitness = 0;
+			/*for (int j=0; j<tsize; j++) {
+			fitness += abs(int(population[i].str[j] - target[j]));
+			}*/
+			fitness=population[i].graph->CalcFitness();
+			population[i].fitness = fitness;
+		}
+
+		else if ((population[i].fitness == 0) && (g_minK >= population[i].graph->getKColor()))
+			{
+				g_minK = population[i].graph->getKColor() - 1;
+				g_isMinChanged = true;
+			}
 	}
+	if (!calculateFitnessOnly)
+	{
+		if (g_isMinChanged)
+		{
+			g_isMinChanged = false;
+			updateAllPopulationWithNewK(population);
+
+		}
+		cout << "minK = " << g_minK << endl;
+
+	}
+
+
 
 }
 
@@ -114,6 +172,8 @@ void mutate(ga_struct &member)
 	}
 	member.graph->changeAllVerteciesWithGivenColor(minimumColor,color);
 	member.graph->setVertexColorAtIndex(colorPlace,color);
+	member.graph->kColor = member.graph->countNumberOfColorsInGraph();
+	member.graph->fixK();
 	return;
 }
 
@@ -171,14 +231,13 @@ void mate(ga_vector &population, ga_vector &buffer)
 
 
 
-
 inline void print_best(ga_vector &gav, int index, ofstream &
 					   outputFile)
-{ 
-	cout << index << ". Best:              : " << *gav[0].graph << "...Fitness (" << gav[0].fitness << ")" << endl; 
+{  
+	cout << index << ". Best:              : " << *gav[0].graph <<  "...Fitness (" << gav[0].fitness << ")" << endl;
 
 
-	outputFile << index << ". Best:              : " << *gav[0].graph << "...Fitness (" << gav[0].fitness << ")" << endl;
+	outputFile << index << ". Best:              : " << *gav[0].graph << "...Fitness (" << gav[0].fitness << ")" << endl; 
 
 }
 
@@ -248,13 +307,17 @@ int main()
 	init_population(pop_alpha, pop_beta);
 	population = &pop_alpha;
 	buffer = &pop_beta;
-	ofstream outputFile("c:\\temp\\print_best.txt");
+	ofstream outputFile("c:\\temp\\print_best_e_03_aneal.txt");
 	for (int i=0; i<50; i++) {
-		explorating(*population,false,HillClimbing);
+		if (i > 0)
+		{
+			calc_fitness(*population);	
+		}
+		explorating(*population,false,TabuSearch);
 		calc_fitness(*population);		// calculate fitness
 		sort_by_fitness(*population);	// sort them
 		print_best(*population, i, outputFile);		// print the best one
-
+		calc_fitness(*population, false);
 		if ((*population)[0].graph->doWeWantToStop()){
 			getchar();
 			break;
