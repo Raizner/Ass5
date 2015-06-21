@@ -55,9 +55,6 @@ void init_population(ga_vector &population,
 
 		citizen.fitness = 0;
 		citizen.str.erase();
-
-		//for (int j=0; j<tsize; j++)
-		//citizen.str += (rand() % 90) + 32;
 		shared_ptr<array<size_t,N>> colors = Graph::createRandomColors(maxDensityEdge);
 		citizen.graph = new Graph(givenGraph,*colors,N, edgeslist);
 		population.push_back(citizen);
